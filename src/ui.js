@@ -1,4 +1,5 @@
 import buttonIcon from './svg/button-icon.svg';
+import { MediumLightbox } from './mediumLightbox';
 
 /**
  * Class for working with UI:
@@ -21,7 +22,7 @@ export default class Ui {
     this.readOnly = readOnly;
     this.nodes = {
       wrapper: make('div', [this.CSS.baseClass, this.CSS.wrapper]),
-      imageContainer: make('div', [ this.CSS.imageContainer ]),
+      imageContainer: make('div', [this.CSS.imageContainer]),
       fileButton: this.createFileButton(),
       imageEl: undefined,
       imagePreloader: make('div', this.CSS.imagePreloader),
@@ -108,7 +109,7 @@ export default class Ui {
    * @returns {Element}
    */
   createFileButton() {
-    const button = make('div', [ this.CSS.button ]);
+    const button = make('div', [this.CSS.button]);
 
     button.innerHTML = this.config.buttonContent || `${buttonIcon} ${this.api.i18n.t('Select an Image')}`;
 
@@ -193,23 +194,71 @@ export default class Ui {
      *
      * @type {Element}
      */
-    this.nodes.imageEl = make(tag, this.CSS.imageEl, attributes);
+    //this.nodes.imageEl = make(tag, this.CSS.imageEl, attributes);
 
     /**
      * Add load event listener
      */
-    this.nodes.imageEl.addEventListener(eventName, () => {
+    // this.nodes.imageEl.addEventListener(eventName, () => {
+    //   this.toggleStatus(Ui.status.FILLED);
+
+    /**
+     * Preloader does not exists on first rendering with presaved data
+     */
+    //   if (this.nodes.imagePreloader) {
+    //     this.nodes.imagePreloader.style.backgroundImage = '';
+    //   }
+    // });
+
+    //this.nodes.imageContainer.appendChild(this.nodes.imageEl);
+
+    /**new structure
+     * <figure class="half left zoom-effect">
+        <div class="aspectRatioPlaceholder">
+          <div class="aspect-ratio-fill" style="padding-bottom: 50%;"></div>
+          <img class="img" data-width="900" data-height="450" src="https://www.tesla.com/tesla_theme/assets/img/_vehicle_redesign/roadster_and_semi/roadster/hero.jpg" />
+        </div>
+      </figure>
+     */
+
+    this.nodes.figure = make('figure', ['center', 'zoom-effect'], {});
+    this.nodes.aspectRatioPlaceholderDiv = make('div', 'aspectRatioPlaceholder', {});
+    this.nodes.aspectRatioFilDiv = make('div', 'aspect-ratio-fill', { style: "padding-bottom: 50%;" });
+    this.nodes.imageTag = make(tag, 'img', { ...attributes });
+
+    /**
+     * Add load event listener
+     */
+    this.nodes.imageTag.addEventListener(eventName, () => {
       this.toggleStatus(Ui.status.FILLED);
 
+      /**initialize mediumlightbox */
+      MediumLightbox('figure.zoom-effect', {
+        margin: 40
+      });
       /**
        * Preloader does not exists on first rendering with presaved data
        */
       if (this.nodes.imagePreloader) {
         this.nodes.imagePreloader.style.backgroundImage = '';
       }
+      this.w = this.nodes.imageTag.naturalWidth;
+      this.h = this.nodes.imageTag.naturalHeight;
+      console.log('width: ', this.w);
+      console.log('HHidth: ', this.h);
+      this.nodes.imageTag.setAttribute('data-width', this.w);
+      this.nodes.imageTag.setAttribute('data-height', this.h);
+      this.ratio = ((this.h / this.w) * 100);
+      this.nodes.aspectRatioFilDiv.style.paddingBottom = this.ratio + '%';
+      console.log('ratio: ', this.ratio);
+      if (this.h > this.w) {//its vertical image so add half class
+        this.nodes.figure.classList.add('half')
+      }
     });
-
-    this.nodes.imageContainer.appendChild(this.nodes.imageEl);
+    this.nodes.aspectRatioPlaceholderDiv.appendChild(this.nodes.aspectRatioFilDiv);
+    this.nodes.aspectRatioPlaceholderDiv.appendChild(this.nodes.imageTag);
+    this.nodes.figure.appendChild(this.nodes.aspectRatioPlaceholderDiv);
+    this.nodes.imageContainer.appendChild(this.nodes.figure);
   }
 
   /**
