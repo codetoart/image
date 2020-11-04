@@ -244,15 +244,15 @@ export default class Ui {
       }
       this.w = this.nodes.imageTag.naturalWidth;
       this.h = this.nodes.imageTag.naturalHeight;
-      console.log('width: ', this.w);
-      console.log('HHidth: ', this.h);
+      // console.log('width: ', this.w);
+      // console.log('height: ', this.h);
       this.nodes.imageTag.setAttribute('data-width', this.w);
       this.nodes.imageTag.setAttribute('data-height', this.h);
       this.ratio = ((this.h / this.w) * 100);
       this.nodes.aspectRatioFilDiv.style.paddingBottom = this.ratio + '%';
-      console.log('ratio: ', this.ratio);
+      // console.log('ratio: ', this.ratio);
       if (this.h > this.w) {//its vertical image so add half class
-        this.nodes.figure.classList.add('half')
+        this.nodes.figure.classList.add('half');
       }
     });
     this.nodes.aspectRatioPlaceholderDiv.appendChild(this.nodes.aspectRatioFilDiv);
