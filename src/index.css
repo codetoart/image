@@ -44,12 +44,14 @@
   }
 
   &__caption {
+    text-align:center;
     &[contentEditable="true"][data-placeholder]::before {
       position: absolute !important;
       content: attr(data-placeholder);
       color: #707684;
       font-weight: normal;
       display: none;
+      left:45%;
     }
 
     &[contentEditable="true"][data-placeholder]:empty {
